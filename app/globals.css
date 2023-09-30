@@ -36,6 +36,13 @@ body > main::before {
     opacity: 0.2;
     background-position: center 0;
     animation: upDown 60s infinite linear;
+    animation-play-state: paused;
+}
+
+@media (min-width: 1280px) {
+    body > main::before {
+        animation-play-state: running;
+    }
 }
 
 @keyframes upDown {
