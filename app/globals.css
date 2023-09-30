@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 0, 0, 0;
+        --background-end-rgb: 0, 0, 0;
+    }
+}
+
+body {
+    color: rgb(var(--foreground-rgb));
+    background: #000;
+}
+
+body > main::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    background-image: url('/bg.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1;
+    opacity: 0.2;
+    background-position: center 0;
+    animation: upDown 60s infinite linear;
+}
+
+@keyframes upDown {
+    0% {
+        filter: hue-rotate(0deg);
+        scale: 2;
+        rotate: 0deg;
+    }
+    50% {
+        filter: hue-rotate(360deg);
+        scale: 6;
+        rotate: 180deg;
+    }
+    100% {
+        filter: hue-rotate(0deg);
+        scale: 2;
+        rotate: 360deg;
+    }
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+    background: rgba(0, 0, 0, 0);
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #88888820;
+    border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #d89fca;
+}
+
+.common-box {
+    @apply backdrop-blur-2xl border-neutral-800 rounded-xl border p-4 bg-zinc-800/30;
+}
+
+.common-box-flat {
+    @apply backdrop-blur-2xl border-neutral-800 md:rounded-xl md:border p-4 bg-zinc-800/30;
+}
+
+.common-box-hover {
+    @apply transition hover:shadow-primaryHoverShadow hover:border-primary hover:bg-secondary/10 hover:cursor-pointer;
+}
+
+.rainbow-text {
+    background: -webkit-linear-gradient(0deg, #fbf52e, #cf75ea);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow:
+        2px 2px 4px #36017f,
+        -1px -1px 0px #fff606;
+}
+
+.youtubeContainer {
+    overflow: hidden;
+}
+
+.youtubeContainer iframe {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#sidebar-toggle:checked ~ header .sidebar-toggle-button .sidebar-open {
+    display: none;
+}
+
+#sidebar-toggle:not(:checked) ~ header .sidebar-toggle-button .sidebar-close {
+    display: none;
+}
+
+#sidebar-toggle:checked ~ .sidebar-menu {
+    display: flex;
+}
