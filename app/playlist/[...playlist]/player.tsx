@@ -12,7 +12,7 @@ const Player = (props: YouTubeProps) => {
 
     return (
         <>
-            <div className={'sticky top-0 z-[1] sm:relative w-full aspect-video'}>
+            <div className={'sticky top-0 z-[2] sm:relative w-full aspect-video'}>
                 <YouTubePlayer
                     className={clsx('static z-[1] common-box-flat aspect-video top-0 youtubeContainer w-full', {
                         'sm:fixed sm:top-[calc(385px_+_2rem)] sm:ml-[16px] sm:!w-[300px] sm:!h-[168px] sm:!pb-0':
