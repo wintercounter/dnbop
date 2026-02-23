@@ -46,11 +46,11 @@ export default function Sidebar({ vols, allstars, selectedPlaylistId }: SidebarP
             <header className={'relative flex xl:my-[50px] text-center'}>
                 <Link href={'/'} title={'DNBOP.com'} className={'xl:flex xl:basis-full place-content-center'}>
                     <Image
-                        src={'/logo.png'}
+                        src={'/logo_new.png'}
                         alt={'DNBOP.com'}
-                        width={128}
-                        height={96}
-                        className={'w-[53px] xl:w-[128px]'}
+                        width={256}
+                        height={173}
+                        className={'w-[60px] xl:w-[256px]'}
                     />
                 </Link>
                 <label htmlFor={'sidebar-toggle'} className={'sidebar-toggle-button text-[40px] xl:hidden ml-auto'}>

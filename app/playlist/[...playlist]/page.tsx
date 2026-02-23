@@ -2,10 +2,37 @@
 import YouTube from 'youtube-sr'
 import getSpotifySdk, { getAllPlaylists } from '@/clients/spotify'
 import { Playlist, PlaylistedTrack, Track } from '@spotify/web-api-ts-sdk'
+import { unstable_cache } from 'next/cache'
 
 import useArtists from '@/hooks/useArtists'
 import Client from './client'
 import Sidebar from '@/components/Sidebar'
+
+const CACHE_TTL_SECONDS = 3600
+
+export const revalidate = 3600
+
+const getYoutubeId = unstable_cache(
+    async (artist: string, trackName: string) => {
+        const query = `${artist} ${trackName}`.trim()
+
+        if (!query) {
+            return null
+        }
+
+        try {
+            const [result] = await YouTube.search(query, { limit: 1 })
+            return result?.id ?? null
+        } catch (error) {
+            console.error('YouTube lookup failed', { query, error })
+            return null
+        }
+    },
+    ['youtube-search-by-track'],
+    {
+        revalidate: CACHE_TTL_SECONDS
+    }
+)
 
 async function getData({ playlistId, trackId }: { playlistId?: string; trackId?: string }) {
     const spotify = await getSpotifySdk()
@@ -29,16 +56,25 @@ async function getData({ playlistId, trackId }: { playlistId?: string; trackId?:
     const trackData = items.find((item: PlaylistedTrack) => {
         return item.track.id === trackId
     })
+    const track = trackData?.track as Track | undefined
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const artist = useArtists((trackData?.track as Track).artists)
-    const [{ id }] = await YouTube.search(`${artist} ${trackData?.track.name}`, { limit: 1 })
-    results.youtubeId = id
+    const artist = track?.artists?.length ? useArtists(track.artists) : ''
+    results.youtubeId = await getYoutubeId(artist, track?.name || '')
 
     return results
 }
 
-export default async function PlaylistPage({ params: { playlist: [playlistId, trackId] = [undefined, undefined] } }) {
+type PlaylistPageProps = {
+    params?: Promise<{
+        playlist?: [string?, string?]
+    }>
+}
+
+export default async function PlaylistPage({ params }: PlaylistPageProps = {}) {
+    const resolvedParams = params ? await params : {}
+    const [playlistId, trackId] = resolvedParams.playlist || [undefined, undefined]
+
     const data = await getData({ playlistId, trackId })
     const { playlistData, youtubeId, tracks, vols, allstars, selectedPlaylistId, selectedTrackId } = data
 

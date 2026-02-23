@@ -1,3 +1,5 @@
+'use client'
+
 import { useInView } from 'react-intersection-observer'
 import YouTubePlayer, { YouTubeProps } from '@/pkg/react-youtube'
 import { usePlayerContext } from '@/contexts/Player'

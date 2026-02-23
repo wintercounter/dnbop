@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ReactNode } from 'react'
+import { Analytics } from '@vercel/analytics/next'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                         ))}
                     </section>
                 </main>
+                <Analytics />
             </body>
         </html>
     )

@@ -1,3 +1,5 @@
+'use client'
+
 import { MouseEventHandler, useState } from 'react'
 import { PlaylistedTrack, Track } from '@spotify/web-api-ts-sdk'
 import clsx from 'clsx'

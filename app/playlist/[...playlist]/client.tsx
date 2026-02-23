@@ -4,7 +4,7 @@ import { PlayerContextProvider } from '@/contexts/Player'
 import PlaylistView from '@/components/PlaylistView'
 import { Playlist, PlaylistedTrack } from '@spotify/web-api-ts-sdk'
 import Player from './player'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 export default function Client({
     playlistData,
@@ -18,7 +18,22 @@ export default function Client({
     selectedTrackId?: string
 }) {
     const router = useRouter()
-    const params = useParams()
+
+    const resolveTrackIndex = () => {
+        const currentTrack = selectedTrackId || ''
+        const byId = tracks.findIndex(item => item.track.id === currentTrack)
+
+        if (byId >= 0) {
+            return byId
+        }
+
+        const byIndex = Number.parseInt(currentTrack, 10)
+        if (!Number.isNaN(byIndex) && byIndex >= 0 && byIndex < tracks.length) {
+            return byIndex
+        }
+
+        return -1
+    }
 
     return (
         <PlayerContextProvider>
@@ -31,16 +46,17 @@ export default function Client({
                         }
                     }}
                     onEnd={() => {
-                        const currentTrackIndex =
-                            tracks.findIndex(item => item.track.id === params.playlist[1]) ||
-                            (params?.playlist?.[1] as unknown as number)
+                        const currentTrackIndex = resolveTrackIndex()
+                        if (currentTrackIndex <= 0) {
+                            return
+                        }
 
-                        if (currentTrackIndex) {
-                            const nextTrack = tracks[currentTrackIndex - 1]
+                        const nextTrackIndex = currentTrackIndex - 1
+                        const nextTrack = tracks[nextTrackIndex]
 
-                            if (nextTrack) {
-                                router.push(`/playlist/${playlistData.id}/${nextTrack.track.id}`, { scroll: false })
-                            }
+                        if (nextTrack) {
+                            const nextTrackSlug = nextTrack.track.id || String(nextTrackIndex)
+                            router.push(`/playlist/${playlistData.id}/${nextTrackSlug}`, { scroll: false })
                         }
                     }}
                 />

@@ -1,5 +1,5 @@
 import { SpotifyApi, Playlist } from '@spotify/web-api-ts-sdk'
-import { revalidateTag, revalidatePath } from 'next/cache'
+import { revalidateTag, unstable_cache } from 'next/cache'
 
 let sdk: SpotifyApi | null = null
 
@@ -33,6 +33,7 @@ const getSdkInstance = async (force?: boolean): Promise<SpotifyApi> => {
 }
 
 const LIMIT = 40
+const CACHE_TTL_SECONDS = 3600
 
 export type ExtendedPlaylist = Playlist & { vol?: number }
 
@@ -41,12 +42,12 @@ type ALL_RESULTS = {
     allstars: Playlist
 }
 
-export const getAllPlaylists = async (): Promise<ALL_RESULTS> => {
+const getAllPlaylistsUncached = async (username: string): Promise<ALL_RESULTS> => {
     const playlists: Playlist[] = []
     let offset = 0
     const sdk = await getSdkInstance()
     while (true) {
-        const { items, next } = await sdk.playlists.getUsersPlaylists(process.env.SPOTIFY_USERNAME, LIMIT, offset)
+        const { items, next } = await sdk.playlists.getUsersPlaylists(username, LIMIT, offset)
         playlists.push(...items)
         if (next) {
             offset += LIMIT
@@ -90,6 +91,15 @@ export const getAllPlaylists = async (): Promise<ALL_RESULTS> => {
         })
 
     return results
+}
+
+const getAllPlaylistsCached = unstable_cache(getAllPlaylistsUncached, ['spotify-all-playlists'], {
+    revalidate: CACHE_TTL_SECONDS,
+    tags: ['spotify']
+})
+
+export const getAllPlaylists = async (): Promise<ALL_RESULTS> => {
+    return getAllPlaylistsCached(process.env.SPOTIFY_USERNAME as string)
 }
 
 export default getSdkInstance

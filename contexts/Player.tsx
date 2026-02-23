@@ -1,3 +1,5 @@
+'use client'
+
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react'
 import type { YouTubePlayer } from 'react-youtube'
 
