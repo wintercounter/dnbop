@@ -9,13 +9,14 @@ import Client from './client'
 import Sidebar from '@/components/Sidebar'
 
 const CACHE_TTL_SECONDS = 3600
+const YOUTUBE_CACHE_TTL_SECONDS = 60 * 60 * 24 * 7
 const YOUTUBE_VIDEO_RENDERER_REGEX = /"videoRenderer":\{"videoId":"([a-zA-Z0-9_-]{11})"/
 
 export const revalidate = 3600
 
 const getYoutubeIdFromResultsPage = async (query: string): Promise<string | null> => {
     const response = await fetch(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&hl=en`, {
-        next: { revalidate: CACHE_TTL_SECONDS }
+        next: { revalidate: YOUTUBE_CACHE_TTL_SECONDS }
     })
 
     if (!response.ok) {
@@ -39,13 +40,13 @@ const getYoutubeId = unstable_cache(
             const [result] = await YouTube.search(query, { limit: 1 })
             return result?.id ?? null
         } catch (error) {
-            console.error('YouTube lookup failed', { query, error })
+            console.error('YouTube lookup failed, falling back', { query, error })
             return getYoutubeIdFromResultsPage(query)
         }
     },
     ['youtube-search-by-track'],
     {
-        revalidate: CACHE_TTL_SECONDS
+        revalidate: YOUTUBE_CACHE_TTL_SECONDS
     }
 )
 

@@ -12,22 +12,46 @@ type SidebarItemProps = {
 }
 
 const SidebarItem = ({ title, id, selected, className }: SidebarItemProps) => {
+    const normalizedTitle = String(title)
+    const isAllstars = normalizedTitle.toLowerCase() === 'allstars'
+
     return (
-        <Link
+        <article
             className={clsx(
-                'flex common-box common-box-hover',
+                'relative flex common-box common-box-hover items-center',
                 {
                     '!border-primary': selected,
-                    'rainbow-text': selected,
+                    'rainbow-text': selected && !isAllstars,
                     uppercase: selected,
-                    'font-bold': selected
+                    'font-bold': selected,
+                    'allstars-item': isAllstars
                 },
                 className
             )}
-            href={`/playlist/${id}`}
         >
-            {title}
-        </Link>
+            <Link
+                href={`/playlist/${id}`}
+                className={clsx('block w-full text-center', {
+                    'allstars-item-link': isAllstars
+                })}
+                title={`Open ${title}`}
+                aria-label={`Open ${title}`}
+            >
+                {isAllstars ? (
+                    <span className={'allstars-title-wrap'}>
+                        <span className={'allstars-star allstars-star-left'} aria-hidden>
+                            ✦
+                        </span>
+                        <span className={'allstars-title-text'}>{normalizedTitle}</span>
+                        <span className={'allstars-star allstars-star-right'} aria-hidden>
+                            ✦
+                        </span>
+                    </span>
+                ) : (
+                    normalizedTitle
+                )}
+            </Link>
+        </article>
     )
 }
 

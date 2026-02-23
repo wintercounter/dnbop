@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import clsx from 'clsx'
 
 import PlaylistTrackRow from '@/components/PlaylistTrackRow'
+import { IconSpotify } from '@/components/icons'
 import { usePlayerContext } from '@/contexts/Player'
 
 function PlaylistView({
@@ -61,9 +62,21 @@ function PlaylistView({
                 className={'flex flex-col items-center sm:sticky sm:items-start top-[1rem] h-fit sm:w-[300px] shrink-0'}
             >
                 {title && (
-                    <h1 className={'w-fit uppercase font-[800] text-[32px] rainbow-text whitespace-nowrap uppercase'}>
-                        {typeof title === 'string' ? title : `Vol ${item.vol}`}
-                    </h1>
+                    <div className={'flex items-center gap-[8px]'}>
+                        <h1 className={'w-fit uppercase font-[800] text-[32px] rainbow-text whitespace-nowrap uppercase'}>
+                            {typeof title === 'string' ? title : `Vol ${item.vol}`}
+                        </h1>
+                        <a
+                            href={`https://open.spotify.com/playlist/${item.id}`}
+                            title={`Open ${item.name} in Spotify`}
+                            aria-label={`Open ${item.name} in Spotify`}
+                            target={'_blank'}
+                            rel={'noreferrer'}
+                            className={'text-[26px] hover:text-spotify transition'}
+                        >
+                            <IconSpotify />
+                        </a>
+                    </div>
                 )}
                 <time className={'text-gray-600 mb-[15px]'}>Updated at {formattedUpdatedAt}</time>
                 <Image
