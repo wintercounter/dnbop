@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import { Playlist, PlaylistedTrack } from '@spotify/web-api-ts-sdk'
 import { usePathname, useRouter } from 'next/navigation'
-import { MouseEventHandler } from 'react'
 import clsx from 'clsx'
 
 import PlaylistTrackRow from '@/components/PlaylistTrackRow'
@@ -28,27 +27,32 @@ function PlaylistView({
     const firstItem = tracks.at(-1) as PlaylistedTrack
     const updatedAt = new Date(firstItem.added_at)
     const formattedUpdatedAt = updatedAt.toISOString().split('T')[0]
-    const handleClick: MouseEventHandler<HTMLAnchorElement> = ev => {
-        ev.preventDefault()
-
-        const trackId = ev.currentTarget.href.split('/').pop()
-
-        router.push(ev.currentTarget.href, {
-            scroll: !pathname.startsWith('/playlist')
-        })
-
+    const handleClick = (trackId?: string, href?: string) => {
         if (trackId === selectedTrackId) {
+            if (!api) {
+                return
+            }
+
             if (playing) {
                 api.pauseVideo()
             } else {
                 api.playVideo()
             }
-        } else {
-            setPlayerState(prevState => ({
-                ...prevState,
-                ready: false
-            }))
+            return
         }
+
+        if (!href) {
+            return
+        }
+
+        router.push(href, {
+            scroll: !pathname.startsWith('/playlist')
+        })
+
+        setPlayerState(prevState => ({
+            ...prevState,
+            ready: false
+        }))
     }
 
     return (
@@ -83,16 +87,19 @@ function PlaylistView({
                 >
                     <div className={'flex flex-col-reverse gap-[8px]'}>
                         {tracks.map((trackItem, index) => {
+                            const trackSlug = trackItem.track.id || String(index)
+                            const isCurrentTrack =
+                                selectedTrackId === trackItem.track.id || selectedTrackId === String(index)
                             const isPlaying =
                                 playing &&
-                                (selectedTrackId === trackItem.track.id ||
-                                    selectedTrackId === (index as unknown as string))
+                                (selectedTrackId === trackItem.track.id || selectedTrackId === String(index))
                             return (
                                 <PlaylistTrackRow
                                     key={trackItem.track.id || trackItem.track.name}
                                     item={trackItem}
                                     playing={isPlaying}
-                                    href={`/playlist/${item.id}/${trackItem.track.id || index}`}
+                                    isCurrentTrack={isCurrentTrack}
+                                    href={`/playlist/${item.id}/${trackSlug}`}
                                     onClick={handleClick}
                                 />
                             )
